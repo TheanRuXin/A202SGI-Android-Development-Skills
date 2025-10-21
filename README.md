@@ -1,68 +1,54 @@
 # A202SGI Andorid Development Skills
-A user-friendly sales and inventory management system for recording and controlling sales transactions, inventory quantity tracking and low stock notification, purchase orders tracking to suppliers, sales and inventory reports, users access for admin and staff members.
+A simple, user-friendly Android To-Do List application designed to help users manage daily tasks efficiently. The app allows users to add, edit, delete, and track their tasks, ensuring better productivity and time management. Built with Android Studio and Firebase Firestore for data storage and synchronization.
 
 ## Table of Contents
 1. Introduction
 2. Features
 3. Installation
 4. Usage
-5. Contributing
-6. License
+5. Technologies Used
+6. Contributing
+7. License
 
 ## Introduction
-POS and Managment System simplifies the process of Managment for POS. It is designed for POS and Inventory to provide seamless purchase experiences to their customers and efficient management for administrators.
+The To-Do List App is a lightweight Android application that helps users stay organized.
+It provides a clean and modern interface for adding and managing tasks, while using Firebase Firestore as a backend to store user data securely in the cloud.
 
 ## Features
-- Manager Register New Account/ active / deactive / change role of an users.
-- Manager View Sales Report and View Inventory Reprt.
-- Admin Register New Product.
-- Admin Manage Product details.
-- Admin Print Product QR Code.
-- Cashier Process Sales and Make Payment in 3 different payment method.
-- Cashier View Sales History
-- Cashier View Available Product
+- Add New Tasks — Quickly create to-do items with titles and descriptions.
+- Edit Existing Tasks — Update task details easily.
+- Delete Tasks — Remove completed or unnecessary tasks.
+- View All Tasks — Display all saved tasks in a clean list view.
+- Cloud Storage (Firestore) — Tasks are stored and synchronized with Firebase Firestore.
+- Real-time Updates — Automatically updates the task list when changes occur.
+- User-Friendly UI — Minimal and intuitive layout for better usability.
 
 ## Installation
 Steps:
-
-1.Clone the Repository: 'https://github.com/TheanRuXin/ALL-2-Sales-and-Inventory-management/'
-
-3.Install Required Python Libraries: Install all dependencies listed in the `requirements.txt` file
-
-4.Set Up the SQLite Database: The system uses SQLite as the database. Ensure the database file (e.g., `Trackwise.db`) exists in the project directory.
-
-5.Run the Application: 
-  1. Start the program : 'main.py'
-
-### Notes
-- Email Features: Ensure you configure the email settings in your script (`smtplib` section) for features like email notifications.
-- PDF Reports: The system generates reports using `reportlab`. Reports will be saved in the project directory.
+1. Clone the Repository: 'https://github.com/TheanRuXin/A202SGI-Android-Development-Skills/'
+2. Launch Android Studio and select “Open an Existing Project”, then choose the cloned folder.
+3. Set Up the Firebase Database and connect the app to Firebase and ensure Firestore is enabled.
+4. Run the Application: 
+  1. Connect an Android device or start an emulator.
+  2. Click Run in Android Studio to launch the app.
 
 ## Usage
-### For Manager:
-1. Login as Manager with username "trackwise" and Password "trackwise123".
-2. Navigate to Register new user and register account for admin and cashier.
-3. View Sales and Inventory report.
-
-### For Admin:
-1. Login
-2. Login to the admin panel.
-3. Register New Product. Add Image
-4. Manage the product details and image if any.
-
-### For Cashier:
-1. Login 
-2. Log In to the cashier panel.
-2. Process the sale, choose product and add quantity.
-3. Make Payement.
+1. Launch the To-Do List App on your Android device.
+2. Enter a task title and an optional description.
+3. Tap Add Task to save it.
+4. To edit or delete, tap on the task and choose the appropriate option.
+5. All changes are instantly synced with Firebase Firestore.
    
 ## Technologies Used
-- Backend: Python
-- Frontend: Tkinter
-- Database: SQLite 
+- Backend: Firebase Firestore
+- Frontend: Android(Java)
+- IDE: Android Studio
+- Database: Cloud Firebase
+- Version Control: Git & GitHub 
 
 ## Contributing
 Guidelines for contributing to the project.
 - Fork the repository
 - Create a new branch
 - Submit a pull request
+- Open a pull request on GitHub
