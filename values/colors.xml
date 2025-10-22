@@ -2,9 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="blue">#b1f2ff</color>
-    <color name="green_blue">#0D98BA</color>
-    <color name="dark_blue">#051650</color>
-    <color name="teal_200">#bcf5f5</color>
-    <color name="teal_700">#179898</color>
+    <color name="pink">#FFB6C1</color>
+    <color name="light_pink">#FFDBE9</color>
+    <color name="super_light_pink">#FFE6EE</color>
+    <color name="gray">#949494</color>
 </resources>
