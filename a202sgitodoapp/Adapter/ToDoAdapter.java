@@ -21,10 +21,13 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
     private List<ToDoModel> todoList;
     private MainActivity activity;
     private FirebaseFirestore firestore;
+    private String userId;
 
     public ToDoAdapter(MainActivity mainActivity, List<ToDoModel> todoList){
         this.todoList = todoList;
         activity = mainActivity;
+        firestore = FirebaseFirestore.getInstance();
+        userId = mainActivity.getIntent().getStringExtra("USER_ID");
     }
 
     @NonNull
@@ -42,15 +45,16 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
         holder.mCheckBox.setText(toDoModel.getTask());
         holder.mDueDateTv.setText("Due on" + toDoModel.getDue());
 
+        holder.mCheckBox.setOnCheckedChangeListener(null);
         holder.mCheckBox.setChecked(toBoolean(toDoModel.getStatus()));
         holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-                    firestore.collection("task").document(toDoModel.TaskId).update("status",1);
-                }else{
-                    firestore.collection("task").document(toDoModel.TaskId).update("status",0);
-                }
+                firestore.collection("users")
+                        .document(userId)
+                        .collection("tasks")
+                        .document(toDoModel.TaskId)
+                        .update("status", isChecked ? 1 : 0);
 
             }
         });

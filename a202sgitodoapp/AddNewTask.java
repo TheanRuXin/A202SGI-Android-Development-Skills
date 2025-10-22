@@ -41,11 +41,16 @@ public class AddNewTask extends BottomSheetDialogFragment {
     private EditText mTaskEdit;;
     private Button mSaveBtn;
     private FirebaseFirestore firestore;
+    private String userId;
     private Context context;
     private String dueDate = "";
 
-    public static AddNewTask newInstance() {
-        return new AddNewTask();
+    public static AddNewTask newInstance(String userId) {
+        AddNewTask fragment = new AddNewTask();
+        Bundle args = new Bundle();
+        args.putString("USER_ID", userId);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Nullable
@@ -64,6 +69,10 @@ public class AddNewTask extends BottomSheetDialogFragment {
 
         firestore = FirebaseFirestore.getInstance();
 
+        if (getArguments() != null) {
+            userId = getArguments().getString("USER_ID");
+        }
+
         mTaskEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
@@ -77,7 +86,7 @@ public class AddNewTask extends BottomSheetDialogFragment {
                     mSaveBtn.setBackgroundColor(Color.GRAY);
                 } else {
                     mSaveBtn.setEnabled(true);
-                    mSaveBtn.setBackgroundColor((getResources().getColor(R.color.dark_blue)));
+                    mSaveBtn.setBackgroundColor((getResources().getColor(R.color.pink)));
                 }
 
             }
@@ -123,8 +132,11 @@ public class AddNewTask extends BottomSheetDialogFragment {
                     taskMap.put("task", task);
                     taskMap.put("due", dueDate);
                     taskMap.put("status", 0);
+                    taskMap.put("userId", userId);
 
-                    firestore.collection("task").add(taskMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    firestore.collection("users")
+                            .document(userId)
+                            .collection("tasks").add(taskMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentReference> task) {
                             if (task.isSuccessful()) {

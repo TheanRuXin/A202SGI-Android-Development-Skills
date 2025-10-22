@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_blue"
+    android:background="@color/light_pink"
     tools:context=".SplashActivity">
 
     <TextView
@@ -15,7 +15,7 @@
         android:text="To Do"
         android:textSize="40sp"
         android:textStyle="bold"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:drawableRight="@drawable/baseline_done_all_24"
         android:drawablePadding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
