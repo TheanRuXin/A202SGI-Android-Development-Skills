@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private ToDoAdapter adapter;
     private List<ToDoModel> mList;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.recyclerViewTasks);
         mFab = findViewById(R.id.floatingActionButton);
         firestore = FirebaseFirestore.getInstance();
+        userId = getIntent().getStringExtra("USER_ID");
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
@@ -46,14 +48,18 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(adapter);
 
         mFab.setOnClickListener(v ->
-                AddNewTask.newInstance().show(getSupportFragmentManager(), "AddNewTask")
+                AddNewTask.newInstance(userId).show(getSupportFragmentManager(), "AddNewTask")
         );
 
         showData();
     }
 
     private void showData() {
-        firestore.collection("task").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        String userId = getIntent().getStringExtra("USER_ID");
+        if (userId == null) return;
+        firestore.collection("users")
+                .document(userId)
+                .collection("tasks").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null) {
