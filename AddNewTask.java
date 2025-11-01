@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,15 +37,18 @@ public class AddNewTask extends BottomSheetDialogFragment {
     private Button mSaveBtn;
     private FirebaseFirestore firestore;
     private String userId;
+    private String categoryId;
     private Context context;
     private String dueDate = "";
     private String id = "";
     private String dueDateUpdate = "";
+    private Calendar selectedDateCalendar;
 
-    public static AddNewTask newInstance(String userId) {
+    public static AddNewTask newInstance(String userId, String categoryId) {
         AddNewTask fragment = new AddNewTask();
         Bundle args = new Bundle();
         args.putString("USER_ID", userId);
+        args.putString("CATEGORY_ID", categoryId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,17 +68,19 @@ public class AddNewTask extends BottomSheetDialogFragment {
         mSaveBtn = view.findViewById(R.id.save_btn);
 
         firestore = FirebaseFirestore.getInstance();
-
+        selectedDateCalendar = null;
         boolean isUpdate = false;
 
         final Bundle bundle = getArguments();
         if (bundle != null) {
             userId = bundle.getString("USER_ID", null);
+            categoryId = bundle.getString("CATEGORY_ID", null);
+
             if (bundle.containsKey("task")) {
                 isUpdate = true;
                 String task = bundle.getString("task", "");
                 id = bundle.getString("id", "");
-                dueDateUpdate = bundle.getString("due", "");
+                String dueDateUpdate = bundle.getString("due", "");
 
                 mTaskEdit.setText(task);
                 setDueDate.setText(dueDateUpdate);
@@ -84,10 +90,6 @@ public class AddNewTask extends BottomSheetDialogFragment {
                     mSaveBtn.setBackgroundColor(Color.GRAY);
                 }
             }
-        }
-
-        if (getArguments() != null) {
-            userId = getArguments().getString("USER_ID");
         }
 
         mTaskEdit.addTextChangedListener(new TextWatcher() {
@@ -111,68 +113,65 @@ public class AddNewTask extends BottomSheetDialogFragment {
 
         setDueDate.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
-            int MONTH = calendar.get(Calendar.MONTH);
-            int YEAR = calendar.get(Calendar.YEAR);
-            int DAY = calendar.get(Calendar.DATE);
-
             DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view1, year, month, dayOfMonth) -> {
-                month = month + 1;
-                dueDate = dayOfMonth + "/" + month + "/" + year;
-                setDueDate.setText(dueDate);
-            }, YEAR, MONTH, DAY);
+                // Initialize the calendar object if it's null
+                if (selectedDateCalendar == null) {
+                    selectedDateCalendar = Calendar.getInstance();
+                }
+                // Store the selected date in our Calendar object
+                selectedDateCalendar.set(year, month, dayOfMonth);
+
+                // Format a string for display purposes ONLY
+                String displayDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+                setDueDate.setText(displayDate);
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
 
             datePickerDialog.show();
-
-            int deepPink = Color.parseColor("#FFB6C1");
-            datePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(deepPink);
-            datePickerDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(deepPink);
+            // ... (your styling code for the dialog is fine)
         });
 
         boolean finalIsUpdate = isUpdate;
         mSaveBtn.setOnClickListener(v -> {
             String task = mTaskEdit.getText().toString().trim();
             if (task.isEmpty()) {
-                Toast.makeText(requireContext(), "Task cannot be empty", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Task is empty", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (finalIsUpdate) {
-                // Update existing task
-                firestore.collection("users")
-                        .document(userId)
-                        .collection("tasks")
-                        .document(id)
-                        .update("task", task, "due", dueDate.isEmpty() ? dueDateUpdate : dueDate)
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(requireContext(), "Task Updated", Toast.LENGTH_SHORT).show();
-                            dismiss(); // closes the dialog -> triggers MainActivity.onDialogClose()
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(requireContext(), "Update Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
+            Map<String, Object> taskMap = new HashMap<>();
+            taskMap.put("task", task);
 
-            } else {
-                // Add new task
-                Map<String, Object> taskMap = new HashMap<>();
-                taskMap.put("task", task);
+            // --- THIS IS THE CRUCIAL, CORRECTED LOGIC ---
+            // We ONLY add the 'due' field to the map if a date has been selected by the user.
+            if (selectedDateCalendar != null) {
+                // Create a proper Date object from our calendar
+                Date dueDate = selectedDateCalendar.getTime();
+                // Put the Date object into the map. This will be saved as a Timestamp.
                 taskMap.put("due", dueDate);
+            }
+
+            if (finalIsUpdate) {
+                // UPDATE the existing task document with the new data
+                firestore.collection("users").document(userId).collection("tasks").document(id)
+                        .update(taskMap) // Use the same map for updates
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(getContext(), "Task Updated", Toast.LENGTH_SHORT).show();
+                            dismiss();
+                        });
+            } else {
+                // CREATE a new task document
                 taskMap.put("status", 0);
                 taskMap.put("time", FieldValue.serverTimestamp());
+                taskMap.put("categoryId", categoryId); // This will be null if adding from "All Tasks"
 
-                firestore.collection("users")
-                        .document(userId)
-                        .collection("tasks")
+                firestore.collection("users").document(userId).collection("tasks")
                         .add(taskMap)
-                        .addOnSuccessListener(docRef -> {
-                            Toast.makeText(requireContext(), "Task saved", Toast.LENGTH_SHORT).show();
-                            dismiss(); // closes the dialog -> triggers MainActivity.onDialogClose()
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(requireContext(), "Error saving task", Toast.LENGTH_SHORT).show();
+                        .addOnSuccessListener(documentReference -> {
+                            Toast.makeText(getContext(), "Task Saved", Toast.LENGTH_SHORT).show();
+                            dismiss();
                         });
             }
         });
-
     }
 
     @Override
