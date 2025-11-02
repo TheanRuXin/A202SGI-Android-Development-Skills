@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +23,7 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText usernameEditText, passwordEditText, confirmPasswordEditText;
+    private EditText usernameEditText, passwordEditText, confirmPasswordEditText, emailEditText;
     private Button registerButton, loginRedirectButton;
     private FirebaseFirestore db;
 
@@ -34,6 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         usernameEditText = findViewById(R.id.editTextUsername);
+        emailEditText = findViewById(R.id.editEmail);
         passwordEditText = findViewById(R.id.editTextPassword);
         confirmPasswordEditText = findViewById(R.id.editTextConfirmPassword);
         registerButton = findViewById(R.id.buttonRegister);
@@ -43,15 +45,20 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String username = usernameEditText.getText().toString().trim();
+                String email = emailEditText.getText().toString().trim();
                 String password = passwordEditText.getText().toString().trim();
                 String confirmPassword = confirmPasswordEditText.getText().toString().trim();
 
-                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
+                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
                     Toast.makeText(RegisterActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                } else if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                    Toast.makeText(RegisterActivity.this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
+                } else if (!password.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")) {
+                    Toast.makeText(RegisterActivity.this, "Password must contain at least 8 characters, including letters and numbers", Toast.LENGTH_SHORT).show();
                 } else if (!password.equals(confirmPassword)) {
                     Toast.makeText(RegisterActivity.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
                 } else {
-                    registerUser(username, password);
+                    registerUser(username, email, password);
                 }
             }
         });
@@ -67,10 +74,13 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void registerUser(String username, String password) {
+    private void registerUser(String username, String email, String password) {
+        String hashedPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray());
+
         Map<String, Object> user = new HashMap<>();
         user.put("username", username);
-        user.put("password", password);
+        user.put("email", email);
+        user.put("passwordHash", hashedPassword);
 
         db.collection("users")
                 .whereEqualTo("username", username)

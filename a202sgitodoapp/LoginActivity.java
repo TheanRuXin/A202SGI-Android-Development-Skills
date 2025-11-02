@@ -14,16 +14,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.DocumentSnapshot;
 
-import com.google.firebase.firestore.QuerySnapshot;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText;
     private Button loginButton;
     private Button registerButton;
+    private Button forgotPasswordButton;
     private FirebaseFirestore db;
 
     @Override
@@ -37,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.editTextPassword);
         loginButton = findViewById(R.id.buttonLogin);
         registerButton = findViewById(R.id.buttonRegister);
+        forgotPasswordButton = findViewById(R.id.buttonforgotpassword);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,22 +60,41 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        forgotPasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void checkLoginWithFirestore(String username, String password) {
         db.collection("users")
                 .whereEqualTo("username", username)
-                .whereEqualTo("password", password)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            if (!task.getResult().isEmpty()) {
-                                DocumentSnapshot userDoc = task.getResult().getDocuments().get(0);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (!task.getResult().isEmpty()) {
+                            DocumentSnapshot userDoc = task.getResult().getDocuments().get(0);
+
+                            String storedHashedPassword = userDoc.getString("passwordHash");
+                            if (storedHashedPassword == null) {
+                                storedHashedPassword = userDoc.getString("password"); // fallback
+                            }
+
+                            if (storedHashedPassword == null) {
+                                Toast.makeText(LoginActivity.this, "Password not found for user", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), storedHashedPassword);
+
+                            if (result.verified) {
                                 String userId = userDoc.getId();
                                 Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+
+                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                                 intent.putExtra("USER_ID", userId);
                                 startActivity(intent);
                                 finish();
@@ -81,9 +102,12 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(LoginActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(LoginActivity.this, "Error: " + task.getException(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
                         }
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Error: " + task.getException(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 }
