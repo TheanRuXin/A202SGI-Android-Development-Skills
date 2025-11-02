@@ -1,5 +1,5 @@
 # A202SGI Andorid Development Skills
-A simple, user-friendly Android To-Do List application designed to help users manage daily tasks efficiently. The app allows users to add, edit, delete, and track their tasks, ensuring better productivity and time management. Built with Android Studio and Firebase Firestore for data storage and synchronization.
+A simple, user-friendly Android To-Do List application designed to help users manage daily tasks efficiently. The app allows users to add, edit, delete, and track their tasks with different catgories. Built with Android Studio and Firebase Firestore for data storage and synchronization.
 
 ## Table of Contents
 1. Introduction
@@ -11,17 +11,23 @@ A simple, user-friendly Android To-Do List application designed to help users ma
 7. License
 
 ## Introduction
-The To-Do List App is a lightweight Android application that helps users stay organized.
-It provides a clean and modern interface for adding and managing tasks, while using Firebase Firestore as a backend to store user data securely in the cloud.
+The To-Do List App is a lightweight Android application designed to help users stay organized and boost productivity. With a clean and intuitive interface, users can easily create, update, and manage tasks across different categories. All task data is securely stored in Firebase Firestore, ensuring real-time updates and cloud synchronization across devices. By providing category-based task tracking, the app allows users to prioritize their activities and improve time management effectively.
 
 ## Features
-- Add New Tasks — Quickly create to-do items with titles and descriptions.
-- Edit Existing Tasks — Update task details easily.
-- Delete Tasks — Remove completed or unnecessary tasks.
-- View All Tasks — Display all saved tasks in a clean list view.
-- Cloud Storage (Firestore) — Tasks are stored and synchronized with Firebase Firestore.
-- Real-time Updates — Automatically updates the task list when changes occur.
-- User-Friendly UI — Minimal and intuitive layout for better usability.
+1) User Authentication
+   - Sign Up: Create a new account with username, email and password.
+   - Login:Login by using usernam and password.
+   - Forgot Password: Reset password with verify username.
+2) Task Management
+   - Add New Tasks: Create a new tasks with titles and set due date.
+   - Add New Categories: Create a new category to organize their tasks.
+   - Edit Tasks: Update their task details.
+   - Delete Tasks: Remove completed or unnecessary tasks.
+   - View All Tasks: Display all tasks with different categories.
+3) Cloud Synchronization
+   - Tasks are stored and updated in real-time using Firebase Firestore.
+4) User-Friendly UI
+   - Minimalist layout for easy navigation.
 
 ## Installation
 Steps:
@@ -34,10 +40,14 @@ Steps:
 
 ## Usage
 1. Launch the To-Do List App on your Android device.
-2. Enter a task title and an optional description.
-3. Tap Add Task to save it.
-4. To edit or delete, tap on the task and choose the appropriate option.
-5. All changes are instantly synced with Firebase Firestore.
+2. Sign Up an account and login to the ToDo list app.
+3. Choose a category or create a new category to add a new task.
+4. Enter category name and give an emoji.
+5. Enter a task title and set a due date, and tap save.
+6. For edit task, swipe a task to the left to edit it.
+7. For delete task, swipe a task to the right to delete it.
+8. Tap All tasks to view all tasks with diffrent categories.
+9. All changes are instantly synced with Firebase Firestore.
    
 ## Technologies Used
 - Backend: Firebase Firestore
@@ -50,5 +60,7 @@ Steps:
 Guidelines for contributing to the project.
 - Fork the repository
 - Create a new branch
-- Submit a pull request
-- Open a pull request on GitHub
+- Make changes in branch
+- Commit changes with a clear message
+- Push branch to Git Hub
+- Open a pull request to the main repository 
