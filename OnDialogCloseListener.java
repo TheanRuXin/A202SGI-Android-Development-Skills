@@ -1,4 +1,3 @@
-
 package com.example.a202sgitodoapp;
 
 import android.content.DialogInterface;

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -81,6 +80,10 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
             // If it's "All Tasks", use the new GroupedTaskAdapter
             groupedAdapter = new GroupedTaskAdapter(this, groupedList, userId);
             mRecyclerView.setAdapter(groupedAdapter);
+
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new GroupedTouchHelper(groupedAdapter));
+            itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
             // We can disable swipe-to-delete for the grouped list for simplicity
         } else {
             // Otherwise, use the simple ToDoAdapter
@@ -269,10 +272,8 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
 
     @Override
     public void onDialogClose(DialogInterface dialogInterface) {
-        // This method is now correctly empty. The listener handles everything.
+        attachDataListener();
     }
-
-
 
     @Override
     protected void onDestroy() {
