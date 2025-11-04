@@ -6,6 +6,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ public class HomeActivity extends AppCompatActivity implements CategoryAdapter.O
     private boolean isSearching = false;
     private ListenerRegistration categoryListener;
     private ListenerRegistration searchListener;
+    private ImageButton logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class HomeActivity extends AppCompatActivity implements CategoryAdapter.O
         myListsTitle = findViewById(R.id.my_lists_title);
         categoryList = new ArrayList<>();
         searchResultsList = new ArrayList<>();
+        logout = findViewById(R.id.logout_button);
 
         // Setup Category RecyclerView with Grid Layout (2 columns)
         categoryRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -105,6 +108,14 @@ public class HomeActivity extends AppCompatActivity implements CategoryAdapter.O
             }
             return false;
         });
+
+        logout.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // clears back stack
+            startActivity(intent);
+            Toast.makeText(HomeActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+        });
+
     }
 
     @Override
@@ -242,8 +253,8 @@ public class HomeActivity extends AppCompatActivity implements CategoryAdapter.O
                 .setNegativeButton("CANCEL", null)
                 .show();
         int blackColor = getResources().getColor(R.color.black);
-    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(blackColor);
-    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(blackColor);
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(blackColor);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(blackColor);
     }
 
     private void performCascadingDelete(CategoryModel category) {
