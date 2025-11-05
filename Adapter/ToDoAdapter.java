@@ -16,7 +16,7 @@ import com.example.a202sgitodoapp.Model.ToDoModel;
 import com.example.a202sgitodoapp.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import android.content.Context;
-import android.content.Intent; // <-- Make sure this import is here
+import android.content.Intent;
 
 import java.util.List;
 import java.text.SimpleDateFormat;
@@ -36,7 +36,6 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
         this.firestore = FirebaseFirestore.getInstance();
         this.userId = mainActivity.getIntent().getStringExtra("USER_ID");
     }
-
     // THIS IS THE NEW CONSTRUCTOR FOR HomeActivity (search mode)
     public ToDoAdapter(Context context, List<ToDoModel> todoList, String userId, boolean isSearchMode){
         this.todoList = todoList;
@@ -45,34 +44,30 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
         this.userId = userId;
         this.isSearchMode = isSearchMode; // <-- This sets the mode
     }
-
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.each_task, parent, false);
         return new MyViewHolder(view);
     }
-
     public void deleteTask(int position) {
         ToDoModel toDoModel = todoList.get(position);
         firestore.collection("users")
                 .document(userId)
                 .collection("tasks")
-                .document(toDoModel.TaskId)
+                .document(toDoModel.getTaskId())
                 .delete();
         todoList.remove(position);
         notifyItemRemoved(position);
     }
-
     public Context getContext(){
         return context;
     }
-
     public void editTask(int position) {
         ToDoModel toDoModel = todoList.get(position);
         Bundle bundle = new Bundle();
         bundle.putString("task", toDoModel.getTask());
-        bundle.putString("id", toDoModel.TaskId);
+        bundle.putString("id", toDoModel.getTaskId());
         bundle.putString("USER_ID", userId);
         bundle.putString("CATEGORY_ID", toDoModel.getCategoryId());
         if (toDoModel.getDue() != null) {
@@ -113,7 +108,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.MyViewHolder> 
             firestore.collection("users")
                     .document(userId)
                     .collection("tasks")
-                    .document(toDoModel.TaskId)
+                    .document(toDoModel.getTaskId())
                     .update("status", isChecked ? 1 : 0);
         });
 
