@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Color when the field is focused (clicked) -->
+    <item android:color="@android:color/darker_gray" android:state_focused="true"/>
+
+    <!-- Default color when the field is not focused -->
+    <item android:color="@android:color/darker_gray"/>
+
+</selector>
