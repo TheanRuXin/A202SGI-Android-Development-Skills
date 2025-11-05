@@ -45,6 +45,8 @@ public class HomeActivity extends AppCompatActivity implements CategoryAdapter.O
     private ListenerRegistration categoryListener;
     private ListenerRegistration searchListener;
     private ImageButton logout;
+    String greetingMessage;
+    String emojiIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,24 @@ public class HomeActivity extends AppCompatActivity implements CategoryAdapter.O
         categoryList = new ArrayList<>();
         searchResultsList = new ArrayList<>();
         logout = findViewById(R.id.logout_button);
+        TextView greetingIcon = findViewById(R.id.greeting_icon_textview);
+        TextView greetingText = findViewById(R.id.greeting_textview);
+        int hourOfDay = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+
+        if (hourOfDay >= 5 && hourOfDay < 12) {
+            greetingMessage = "Good morning!";
+            emojiIcon = "☀️";
+        } else if (hourOfDay >= 12 && hourOfDay < 18) {
+            greetingMessage = "Good afternoon!";
+            emojiIcon = "🕶️";
+        } else {
+            greetingMessage = "Good evening!";
+            emojiIcon = "🌙";
+        }
+        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("'It''s' EEEE, MMMM d", java.util.Locale.getDefault());
+        String dateString = dateFormat.format(new java.util.Date());
+        greetingIcon.setText(emojiIcon);
+        greetingText.setText(greetingMessage + "\n" + dateString);
 
         // Setup Category RecyclerView with Grid Layout (2 columns)
         categoryRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
