@@ -70,7 +70,26 @@ public class GroupedTaskAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             // This is the binding logic from your original ToDoAdapter
             taskHolder.mCheckBox.setText(task.getTask());
+            taskHolder.mCheckBox.setOnCheckedChangeListener(null);
             taskHolder.mCheckBox.setChecked(task.getStatus() != 0);
+
+            taskHolder.mCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (buttonView.isPressed()) { // ensure user triggered it
+                    int newStatus = isChecked ? 1 : 0;
+                    firestore.collection("users")
+                            .document(userId)
+                            .collection("tasks")
+                            .document(task.getTaskId())
+                            .update("status", newStatus)
+                            .addOnSuccessListener(aVoid -> {
+                                task.setStatus(newStatus);
+                                Toast.makeText(context, isChecked ? "Task completed" : "Task marked incomplete", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(context, "Failed to update status", Toast.LENGTH_SHORT).show();
+                            });
+                }
+            });
 
             taskHolder.itemView.setOnClickListener(v -> editTask(position));
 
